@@ -46,7 +46,9 @@
       domReadyTime,
       isJsonTime,
       exitedNotJsonTime,
-      displayedFormattedJsonTime
+      displayedFormattedJsonTime,
+      json = false,
+      json_enable = true
   ;
   
   // Open the port "jf" now, ready for when we need it
@@ -72,9 +74,6 @@
 
           // Clear the slowAnalysisTimeout (if the BG worker had taken longer than 1s to respond with an answer to whether or not this is JSON, then it would have fired, unhiding the PRE... But now that we know it's JSON, we can clear this timeout, ensuring the PRE stays hidden.)
             clearTimeout(slowAnalysisTimeout) ;
-
-          // force to light theme until a dark mode version is created
-            document.querySelector('meta[name="color-scheme"]').setAttribute("content", "light");
           
           // Insert CSS
             jfStyleEl = document.createElement('style') ;
@@ -82,10 +81,26 @@
             //jfStyleEl.innerText = 'body{padding:0;}' ;
             document.head.appendChild(jfStyleEl) ;
 
+            var dm = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if(dm){
+              jfStyleEl.insertAdjacentHTML(
+                'beforeend',
+                'body{-webkit-user-select:text;overflow-y:scroll!important;margin:0;position:relative}#optionBar{-webkit-user-select:none;display:block;position:absolute;top:9px;right:17px}#buttonFormatted,#buttonPlain{-webkit-border-radius:2px;-webkit-box-shadow:0 1px 3px rgba(0,0,0,.1);-webkit-user-select:none;background:-webkit-linear-gradient(#fafafa,#f4f4f4 40%,#e5e5e5);border:1px solid #aaa;color:#444;font-size:12px;margin-bottom:0;min-width:4em;padding:3px 0;position:relative;z-index:10;display:inline-block;width:80px;text-shadow:1px 1px rgba(255,255,255,.3)}#buttonFormatted{margin-left:0;border-top-left-radius:0;border-bottom-left-radius:0}#buttonPlain{margin-right:0;border-top-right-radius:0;border-bottom-right-radius:0;border-right:none}#buttonFormatted:hover,#buttonPlain:hover{-webkit-box-shadow:0 1px 3px rgba(0,0,0,.2);background:#ebebeb -webkit-linear-gradient(#fefefe,#f8f8f8 40%,#e9e9e9);border-color:#999;color:#222}#buttonFormatted:active,#buttonPlain:active{-webkit-box-shadow:inset 0 1px 3px rgba(0,0,0,.2);background:#ebebeb -webkit-linear-gradient(#f4f4f4,#efefef 40%,#dcdcdc);color:#333}#buttonFormatted.selected,#buttonPlain.selected{-webkit-box-shadow:inset 0 1px 5px rgba(0,0,0,.2);background:#ebebeb -webkit-linear-gradient(#e4e4e4,#dfdfdf 40%,#dcdcdc);color:#333}#buttonFormatted:focus,#buttonPlain:focus{outline:0}#jsonpCloser,#jsonpOpener{padding:4px 0 0 8px;color:#000;margin-bottom:-6px}#jsonpCloser{margin-top:0}#formattedJson{padding-left:28px;padding-top:6px}pre{padding:36px 5px 5px 5px}.kvov{display:block;padding-left:20px;margin-left:-20px;position:relative;color:#818181}.collapsed{white-space:nowrap}.collapsed>.blockInner{display:none}.collapsed>.ell:after{content:"…";font-weight:700}.collapsed>.ell{margin:0 4px;color:#888}.collapsed .kvov{display:inline}.e{width:20px;height:18px;display:block;position:absolute;left:-2px;top:1px;z-index:5;background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAD1JREFUeNpiYGBgOADE%2F3Hgw0DM4IRHgSsDFOzFInmMAQnY49ONzZRjDFiADT7dMLALiE8y4AGW6LoBAgwAuIkf%2F%2FB7O9sAAAAASUVORK5CYII%3D");background-repeat:no-repeat;background-position:center center;display:block;opacity:.15;filter:invert(1)}.collapsed>.e{-webkit-transform:rotate(-90deg);width:18px;height:20px;left:0;top:0}.e:hover{opacity:.35}.e:active{opacity:.5}.collapsed .kvov .e{display:none}.blockInner{display:block;padding-left:24px;border-left:1px dotted #444;margin-left:2px}#formattedJson,#jsonpCloser,#jsonpOpener{color:#333;font:13px/18px monospace}#formattedJson{color:#444}.b{font-weight:700}.s{color:#54ad4b;word-wrap:break-word}a:link,a:visited{text-decoration:none;color:inherit}a:active,a:hover{text-decoration:underline;color:#050}.bl,.n,.nl{font-weight:700;color:#5a4ad1}.k{color:#818181}#formattingMsg{font:13px "Lucida Grande","Segoe UI",Tahoma;padding:10px 0 0 8px;margin:0;color:#333}#formattingMsg>svg{margin:0 7px;position:relative;top:1px}[hidden]{display:none!important}span{white-space:pre-wrap}@-webkit-keyframes spin{from{-webkit-transform:rotate(0)}to{-webkit-transform:rotate(360deg)}}#spinner{-webkit-animation:spin 2s 0 infinite}*{-webkit-font-smoothing:antialiased}'
+              ) ;
+
+            }
+            else{
+              jfStyleEl.insertAdjacentHTML(
+                'beforeend',
+                'body{-webkit-user-select:text;overflow-y:scroll !important;margin:0;position:relative}#optionBar{-webkit-user-select:none;display:block;position:absolute;top:9px;right:17px}#buttonFormatted,#buttonPlain{-webkit-border-radius:2px;-webkit-box-shadow:0px 1px 3px rgba(0,0,0,0.1);-webkit-user-select:none;background:-webkit-linear-gradient(#fafafa, #f4f4f4 40%, #e5e5e5);border:1px solid #aaa;color:#444;font-size:12px;margin-bottom:0px;min-width:4em;padding:3px 0;position:relative;z-index:10;display:inline-block;width:80px;text-shadow:1px 1px rgba(255,255,255,0.3)}#buttonFormatted{margin-left:0;border-top-left-radius:0;border-bottom-left-radius:0}#buttonPlain{margin-right:0;border-top-right-radius:0;border-bottom-right-radius:0;border-right:none}#buttonFormatted:hover,#buttonPlain:hover{-webkit-box-shadow:0px 1px 3px rgba(0,0,0,0.2);background:#ebebeb -webkit-linear-gradient(#fefefe, #f8f8f8 40%, #e9e9e9);border-color:#999;color:#222}#buttonFormatted:active,#buttonPlain:active{-webkit-box-shadow:inset 0px 1px 3px rgba(0,0,0,0.2);background:#ebebeb -webkit-linear-gradient(#f4f4f4, #efefef 40%, #dcdcdc);color:#333}#buttonFormatted.selected,#buttonPlain.selected{-webkit-box-shadow:inset 0px 1px 5px rgba(0,0,0,0.2);background:#ebebeb -webkit-linear-gradient(#e4e4e4, #dfdfdf 40%, #dcdcdc);color:#333}#buttonFormatted:focus,#buttonPlain:focus{outline:0}#jsonpOpener,#jsonpCloser{padding:4px 0 0 8px;color:#000;margin-bottom:-6px}#jsonpCloser{margin-top:0}#formattedJson{padding-left:28px;padding-top:6px}pre{padding:36px 5px 5px 5px}.kvov{display:block;padding-left:20px;margin-left:-20px;position:relative}.collapsed{white-space:nowrap}.collapsed>.blockInner{display:none}.collapsed>.ell:after{content:"…";font-weight:bold}.collapsed>.ell{margin:0 4px;color:#888}.collapsed .kvov{display:inline}.e{width:20px;height:18px;display:block;position:absolute;left:-2px;top:1px;z-index:5;background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAD1JREFUeNpiYGBgOADE%2F3Hgw0DM4IRHgSsDFOzFInmMAQnY49ONzZRjDFiADT7dMLALiE8y4AGW6LoBAgwAuIkf%2F%2FB7O9sAAAAASUVORK5CYII%3D");background-repeat:no-repeat;background-position:center center;display:block;opacity:0.15}.collapsed>.e{-webkit-transform:rotate(-90deg);width:18px;height:20px;left:0px;top:0px}.e:hover{opacity:0.35}.e:active{opacity:0.5}.collapsed .kvov .e{display:none}.blockInner{display:block;padding-left:24px;border-left:1px dotted #bbb;margin-left:2px}#formattedJson,#jsonpOpener,#jsonpCloser{color:#333;font:13px/18px monospace}#formattedJson{color:#444}.b{font-weight:bold}.s{color:#0B7500;word-wrap:break-word}a:link,a:visited{text-decoration:none;color:inherit}a:hover,a:active{text-decoration:underline;color:#050}.bl,.nl,.n{font-weight:bold;color:#1A01CC}.k{color:#000}#formattingMsg{font:13px "Lucida Grande","Segoe UI","Tahoma";padding:10px 0 0 8px;margin:0;color:#333}#formattingMsg>svg{margin:0 7px;position:relative;top:1px}[hidden]{display:none !important}span{white-space:pre-wrap}@-webkit-keyframes spin{from{-webkit-transform:rotate(0deg)}to{-webkit-transform:rotate(360deg)}}#spinner{-webkit-animation:spin 2s 0 infinite}*{-webkit-font-smoothing:antialiased}'
+              ) ;
+            }
+            
             jfStyleEl.insertAdjacentHTML(
               'beforeend',
-              'body{-webkit-user-select:text;overflow-y:scroll !important;margin:0;position:relative}#optionBar{-webkit-user-select:none;display:block;position:absolute;top:9px;right:17px}#buttonFormatted,#buttonPlain{-webkit-border-radius:2px;-webkit-box-shadow:0px 1px 3px rgba(0,0,0,0.1);-webkit-user-select:none;background:-webkit-linear-gradient(#fafafa, #f4f4f4 40%, #e5e5e5);border:1px solid #aaa;color:#444;font-size:12px;margin-bottom:0px;min-width:4em;padding:3px 0;position:relative;z-index:10;display:inline-block;width:80px;text-shadow:1px 1px rgba(255,255,255,0.3)}#buttonFormatted{margin-left:0;border-top-left-radius:0;border-bottom-left-radius:0}#buttonPlain{margin-right:0;border-top-right-radius:0;border-bottom-right-radius:0;border-right:none}#buttonFormatted:hover,#buttonPlain:hover{-webkit-box-shadow:0px 1px 3px rgba(0,0,0,0.2);background:#ebebeb -webkit-linear-gradient(#fefefe, #f8f8f8 40%, #e9e9e9);border-color:#999;color:#222}#buttonFormatted:active,#buttonPlain:active{-webkit-box-shadow:inset 0px 1px 3px rgba(0,0,0,0.2);background:#ebebeb -webkit-linear-gradient(#f4f4f4, #efefef 40%, #dcdcdc);color:#333}#buttonFormatted.selected,#buttonPlain.selected{-webkit-box-shadow:inset 0px 1px 5px rgba(0,0,0,0.2);background:#ebebeb -webkit-linear-gradient(#e4e4e4, #dfdfdf 40%, #dcdcdc);color:#333}#buttonFormatted:focus,#buttonPlain:focus{outline:0}#jsonpOpener,#jsonpCloser{padding:4px 0 0 8px;color:#000;margin-bottom:-6px}#jsonpCloser{margin-top:0}#formattedJson{padding-left:28px;padding-top:6px}pre{padding:36px 5px 5px 5px}.kvov{display:block;padding-left:20px;margin-left:-20px;position:relative}.collapsed{white-space:nowrap}.collapsed>.blockInner{display:none}.collapsed>.ell:after{content:"…";font-weight:bold}.collapsed>.ell{margin:0 4px;color:#888}.collapsed .kvov{display:inline}.e{width:20px;height:18px;display:block;position:absolute;left:-2px;top:1px;z-index:5;background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAD1JREFUeNpiYGBgOADE%2F3Hgw0DM4IRHgSsDFOzFInmMAQnY49ONzZRjDFiADT7dMLALiE8y4AGW6LoBAgwAuIkf%2F%2FB7O9sAAAAASUVORK5CYII%3D");background-repeat:no-repeat;background-position:center center;display:block;opacity:0.15}.collapsed>.e{-webkit-transform:rotate(-90deg);width:18px;height:20px;left:0px;top:0px}.e:hover{opacity:0.35}.e:active{opacity:0.5}.collapsed .kvov .e{display:none}.blockInner{display:block;padding-left:24px;border-left:1px dotted #bbb;margin-left:2px}#formattedJson,#jsonpOpener,#jsonpCloser{color:#333;font:13px/18px monospace}#formattedJson{color:#444}.b{font-weight:bold}.s{color:#0B7500;word-wrap:break-word}a:link,a:visited{text-decoration:none;color:inherit}a:hover,a:active{text-decoration:underline;color:#050}.bl,.nl,.n{font-weight:bold;color:#1A01CC}.k{color:#000}#formattingMsg{font:13px "Lucida Grande","Segoe UI","Tahoma";padding:10px 0 0 8px;margin:0;color:#333}#formattingMsg>svg{margin:0 7px;position:relative;top:1px}[hidden]{display:none !important}span{white-space:pre-wrap}@-webkit-keyframes spin{from{-webkit-transform:rotate(0deg)}to{-webkit-transform:rotate(360deg)}}#spinner{-webkit-animation:spin 2s 0 infinite}*{-webkit-font-smoothing:antialiased}'
-            ) ;
+              'pre{margin-top:0px;}body{font:13px/18px monospace;}#optionBar{z-index:1;}.switch{position:relative;display:inline-block;width:40px;height:20px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;-webkit-transition:.4s;transition:.4s}.slider:before{position:absolute;content:"";height:12px;width:12px;left:4px;bottom:4px;background-color:#fff;-webkit-transition:.4s;transition:.4s}input:checked+.slider{background-color:#2196f3}input:focus+.slider{box-shadow:0 0 1px #2196f3}input:checked+.slider:before{-webkit-transform:translateX(19px);-ms-transform:translateX(19px);transform:translateX(19px)}.slider.round{border-radius:34px}.slider.round:before{border-radius:50%}'
+            );
   
             // Add custom font name if set - FROM FUTURE
               // if (typeof settings.fontName === 'string') {
@@ -124,51 +139,43 @@
             //   optionBar.appendChild(optionsLink) ;
             // }
           
-          // Create toggleFormat button
-            var buttonPlain = document.createElement('button'),
-              buttonFormatted = document.createElement('button') ;
-            buttonPlain.id = 'buttonPlain' ;
-            buttonPlain.innerText = 'Raw' ;
-            buttonFormatted.id = 'buttonFormatted' ;
-            buttonFormatted.innerText = 'Parsed' ;
-            buttonFormatted.classList.add('selected') ;
+            //SWITCH
             
-            var plainOn = false ;
-            buttonPlain.addEventListener(
-              'click',
-              function () {
-                // When plain button clicked...
-                if (!plainOn) {
-                  plainOn = true ;
-                  pre.hidden = false ;
-                  jfContent.hidden = true ;
+            var label_switch = document.createElement("label");
+            label_switch.classList.add("switch");
+            var input_switch = document.createElement("input")
+            input_switch.type = "checkbox";
+            input_switch.checked = true;
+            var span_switch = document.createElement("span");
+            span_switch.classList.add("slider");
+            span_switch.classList.add("round");
 
-                  buttonFormatted.classList.remove('selected') ;
-                  buttonPlain.classList.add('selected') ;
-                }
-              },
-              false
-            ) ;
+            label_switch.appendChild(input_switch);
+            label_switch.appendChild(span_switch);
+
+            input_switch.addEventListener("change", function(checkbox){
+              if(input_switch.checked){
+                plainOn = false;
+                pre.hidden = true;
+                jfContent.hidden = false;
+              }
+              else{
+                plainOn = true;
+                pre.hidden = false;
+                jfContent.hidden = true;
+              }
+            });
             
-            buttonFormatted.addEventListener(
-              'click',
-              function () {
-                // When formatted button clicked...
-                if (plainOn) {
-                  plainOn = false ;
-                  pre.hidden = true ;
-                  jfContent.hidden = false ;
 
-                  buttonFormatted.classList.add('selected') ;
-                  buttonPlain.classList.remove('selected') ;
-                }
-              },
-              false
-            ) ;
+            optionBar.appendChild(label_switch);
+            optionBar.insertAdjacentHTML(
+              'beforeend',
+              '<span class="kvov objProp" style="font-size: 13px; display: inline; margin-left: 0px; padding-left: 5px">Format</span>'
+            )
             
             // Put it in optionBar
-              optionBar.appendChild(buttonPlain) ;
-              optionBar.appendChild(buttonFormatted) ;
+              // optionBar.appendChild(buttonPlain) ;
+              // optionBar.appendChild(buttonFormatted) ;
 
           // Attach event handlers
             document.addEventListener(
@@ -202,7 +209,7 @@
               document.head.appendChild(script) ;
               console.log('JSON Formatter: Type "json" to inspect.') ;
             }, 100) ;
-
+            json = true;
           break ;
         
         default :
@@ -395,5 +402,5 @@
       }
     }
   }
-
+  
 })();

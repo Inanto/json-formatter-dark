@@ -47,6 +47,8 @@
       TYPE_NULL   = 6
     ;
 
+    var jf_tabs  = [];
+
   // Utility functions
     function removeComments (str) {
       str = ('__' + str + '__').split('');
@@ -394,8 +396,15 @@
         return returnHTML ;
     }
 
+    
+    // chrome.tabs.query({}, function (tabs) {
+    //   tabs.forEach(element => {
+    //     jf_tabs[element.id] = false;
+    //   });
+    // });
+
   // Listen for requests from content pages wanting to set up a port
-    chrome.extension.onConnect.addListener(function(port) {
+      chrome.extension.onConnect.addListener(function (port) {
 
       if (port.name !== 'jf') {
         console.log('JSON Formatter error - unknown port name '+port.name, port) ;
@@ -472,6 +481,7 @@
                   }
                   
               jsonpFunctionName = firstBit ;
+
             }
 
             // If still running, we now have obj, which is valid JSON.
@@ -491,10 +501,11 @@
 
             // Post the HTML string to the content script
               port.postMessage(['FORMATTED', html, validJsonText]) ;
-
+              
             // Disconnect
               port.disconnect() ;
         }
       });
     });
+
 }()) ;
